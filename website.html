@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+<head>
+    <title>RAFFA informasi - beberapa informasi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #eef2f7; color: #333;
+        }
+
+        .header-dummy { 
+            background: #0134f7f0; color: #ffffff; 
+            padding: 40px 20px; text-align: center; 
+            border-bottom: 5px solid #c99a5a;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-dummy h1 {
+            margin: 0; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .main-content { 
+            max-width: 1000px; margin: -30px auto 40px auto; 
+            background: #ffffff; padding: 30px; 
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative; z-index: 10;
+        }
+
+        h2 { 
+            color: #00509d; border-left: 5px solid #003366;
+            padding-left: 15px; margin-top: 20px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; margin-top: 25px;
+        }
+
+        .game-card {
+            background: #ffffff; 
+            border: 1px solid #eee;
+            border-radius: 15px; overflow: hidden;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .game-card img {
+            width: 100%; height: 160px;
+            object-fit: cover; border-bottom: 3px solid #0134f7f0;
+        }
+
+        .game-card-info {
+            padding: 15px; text-align: center;
+        }
+
+        .badge {
+            display: inline-block; background: #ff4757;
+            color: white; font-size: 10px;
+            padding: 2px 8px; border-radius: 10px;
+            margin-bottom: 5px; text-transform: uppercase;
+        }
+
+        /* --- STYLING INFO PENULIS (UPDATE DENGAN FOTO) --- */
+        .author-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #eee;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .author-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden; /* Agar foto tetap bulat */
+            flex-shrink: 0;
+            border: 3px solid #c99a5a;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Agar foto tidak lonjong */
+        }
+
+        .author-text h4 {
+            margin: 0;
+            color: #003366;
+            font-size: 1.2em;
+        }
+
+        .author-text p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* MODAL & LIGHTBOX STYLING */
+        .modal {
+            display: none; position: fixed;
+            z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fff; margin: 5% auto;
+            border-radius: 20px; width: 90%;
+            max-width: 700px; overflow: hidden;
+            animation: slideDown 0.4s ease;
+            position: relative;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header-img {
+            width: 100%; height: 250px; object-fit: cover;
+            cursor: zoom-in;
+        }
+
+        .modal-body {
+            padding: 30px; line-height: 1.7;
+        }
+
+        .history-section {
+            background: #f9f9f9; padding: 15px;
+            border-radius: 10px; border-left: 4px solid #DEB173;
+            margin: 15px 0; font-size: 0.95em;
+        }
+
+        .img-gallery {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-top: 20px;
+        }
+
+        .img-gallery img {
+            width: 100%; height: 80px;
+            object-fit: cover; border-radius: 8px;
+            cursor: zoom-in;
+            transition: opacity 0.2s;
+        }
+
+        .img-gallery img:hover { opacity: 0.8; }
+
+        .close-btn {
+            position: absolute; right: 20px; top: 15px;
+            color: white; font-size: 35px;
+            font-weight: bold; cursor: pointer;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 1001;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80%;
+            border: 3px solid white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .footer {
+            text-align: center; padding: 30px;
+            color: #666; font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .author-section {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-dummy">
+        <h1>raffa informasi game</h1>
+        <p style="margin-top: 10px; font-weight: 300;">Berikut informasi game terbaru</p>
+    </div>
+
+    <div class="main-content">
+        <h2>PILIH GAME UNTUK DETAIL</h2>
+        <p>Klik kartu game untuk detail, lalu <strong>klik gambar apa saja</strong> untuk memperbesar.</p>
+
+        <div class="game-grid" id="gameGrid"></div>
+
+        <!-- SEKSI INFORMASI PENULIS -->
+        <div class="author-section">
+            <div class="author-avatar">
+                <!-- GANTI LINK DI BAWAH INI DENGAN FOTO KAMU -->
+                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Foto Raffa">
+            </div>
+            <div class="author-text">
+                <h4>Tentang Penulis</h4>
+                <p>Halo,kenalin saya <strong>Raffa</strong>. Saya cuma seorang pelajar dari al-amjad yang lagi belajar coding sambil isi waktu luang buat main game meski saya masih kelas 8. Website ini sebenarnya tugas sekaligus tempat saya belajar bikin sesuatu yang bermanfaat. Semoga kalian suka sama info game yang saya tulis di sini ya!"</p>
+                <p style="font-size: 0.85em; color: #0134f7f0;">Diterbitkan pada: 2026 • Raffa Game Info</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL & LIGHTBOX (Tetap sama) -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <img id="modalHeroImg" class="modal-header-img" src="" alt="Hero" onclick="openLightbox(this.src)">
+            <div class="modal-body">
+                <h2 id="modalTitle" style="border:none; padding:0; margin:0;"></h2>
+                <div id="modalIdentity" style="color: #00cce3; font-size: 0.9em; margin-bottom: 15px;"></div>
+                <div class="history-section">
+                    <strong>📜 Sejarah Map:</strong>
+                    <p id="modalHistory" style="margin-top: 5px;"></p>
+                </div>
+                <strong>🛠️ Update Terkini:</strong>
+                <p id="modalUpdate"></p>
+                <strong>🖼️ Galeri Foto Game:</strong>
+                <div class="img-gallery" id="modalGallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+        <span class="close-btn">×</span>
+        <img id="lightboxImg" src="">
+    </div>
+
+    <div class="footer">
+        © 2026 Berberapa informasi game mungkin berharga
+    </div>
+
+    <script>
+        // ... (Script JS tetap sama seperti sebelumnya) ...
+        const games = [
+            {
+                title: "Mobile Legends",
+                image: "ML.JPG",
+                identity: "MOBA 5v5 - MOONTON",
+                history: "Mobile Legends: Bang Bang (MLBB) adalah game mobile bergenre MOBA yang dirilis secara global pada Juli 2016...",
+                update: "Update patch terbaru menghadirkan hero baru dan penyesuaian map.",
+                gallery: ["https://img.utdstc.com/icon/78d/66f/78d66ff1ab1bd23f7fd6d9cdb93854881cb8f0b69e8a301faaf4f4eab058d19e:200", "https://i.pinimg.com/736x/e7/f9/3e/e7f93e93e8acec17d4a34cf6899eb935.jpg", "https://cdnpro.eraspace.com/media/mageplaza/blog/post/u/r/urutan_rank_mobile_legends.jpeg"]
+            },
+            {
+                title: "CALL OF DUTY MOBILE",
+                image: "https://cdn1-production-images-kly.akamaized.net/ffv41QFmkxGGKGpWEPzM1A_T_1M=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/3139029/original/025525600_1590729106-Banner-1.jpg",
+                identity: "FPS - Activision / Garena",
+                history: "Call of Duty: Mobile (CODM) adalah game first-person shooter (FPS) populer yang dirilis resmi pada 1 Oktober 2019...",
+                update: "Pembaruan ini memperbaiki masalah penanganan senjata dan mengembalikan mode favorit pemain.",
+                gallery: ["https://play-lh.googleusercontent.com/xUPnTIZqL7q33EIysnPBGw9OCGmMw6Ebp1XV0XO8y_ueugEG7xUNTwwOLTtdO3GLnkSsFuu4r3e3B-ViojEY=w526-h296-rw", "https://www.callofduty.com/content/dam/atvi/callofduty/cod-touchui/mobile/home/gamemodes/GameModes_DMZrecon.webp", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStPil7CFZk2gusdSCg6YM1vcsauaSfysLtdg&s"]
+            }
+
+        ];
+
+        const gameGrid = document.getElementById('gameGrid');
+        games.forEach((game, index) => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `<img src="${game.image}" alt="${game.title}"><div class="game-card-info"><span class="badge">Game Info</span><h3>${game.title}</h3></div>`;
+            card.onclick = () => openModal(index);
+            gameGrid.appendChild(card);
+        });
+
+        function openModal(index) {
+            const game = games[index];
+            document.getElementById('modalHeroImg').src = game.image;
+            document.getElementById('modalTitle').innerText = game.title;
+            document.getElementById('modalIdentity').innerText = game.identity;
+            document.getElementById('modalHistory').innerText = game.history;
+            document.getElementById('modalUpdate').innerText = game.update;
+            const gallery = document.getElementById('modalGallery');
+            gallery.innerHTML = '';
+            game.gallery.forEach(imgUrl => {
+                const imgEl = document.createElement('img');
+                imgEl.src = imgUrl;
+                imgEl.onclick = (e) => { e.stopPropagation(); openLightbox(imgUrl); };
+                gallery.appendChild(imgEl);
+            });
+            document.getElementById('gameModal').style.display = 'block';
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('gameModal')) closeModal();
+        }
+    </script>
+</body>
+</html>
